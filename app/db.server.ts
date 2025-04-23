@@ -1,8 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { registerWebhook } from "./registerWebhook";
-
-registerWebhook().catch(console.error);
-
 
 let db: PrismaClient;
 

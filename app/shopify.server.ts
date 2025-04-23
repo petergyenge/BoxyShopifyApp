@@ -6,7 +6,6 @@ import {
 } from "@shopify/shopify-app-remix/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { db } from "./db.server";
-import { registerWebhook } from "./registerWebhook";
 
 // 💡 Shopify app URL biztosítása (/ nélkül a végén)
 const appUrl = process.env.SHOPIFY_APP_URL?.replace(/\/$/, "");
@@ -28,14 +27,41 @@ const shopify = shopifyApp({
     unstable_newEmbeddedAuthStrategy: true,
     removeRest: true,
   },
-  ...(process.env.SHOP_CUSTOM_DOMAIN
-    ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
-    : {}),
-});
 
-registerWebhook().catch((err) =>
-  console.error("Webhook regisztrálási hiba:", err)
-);
+  // ✅ Webhook regisztráció automatikusan telepítés után
+  async afterAuth({ session }: { session: import("@shopify/shopify-app-remix/server").Session }) {
+    const shop = session.shop;
+    const accessToken = session.accessToken;
+
+    try {
+      const response = await fetch(
+        `https://${shop}/admin/api/2024-01/webhooks.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(accessToken && { "X-Shopify-Access-Token": accessToken }),
+          },
+          body: JSON.stringify({
+            webhook: {
+              topic: "orders/create",
+              address: `${appUrl}/webhooks/orders/create`,
+              format: "json",
+            },
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Webhook sikeresen regisztrálva!");
+      } else {
+        console.error("Webhook regisztráció sikertelen:", await response.text());
+      }
+    } catch (error) {
+      console.error("Webhook regisztráció error:", error);
+    }
+  },
+});
 
 export default shopify;
 export const authenticate = shopify.authenticate;
@@ -43,5 +69,4 @@ export const apiVersion = ApiVersion.January25;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
 export const unauthenticated = shopify.unauthenticated;
 export const login = shopify.login;
-export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;
