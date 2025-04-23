@@ -10,10 +10,16 @@ export const action = async ({ request }: { request: Request }) => {
   }
 
   try {
+    const shopDomain = request.headers.get("x-shopify-shop-domain");
+
+    if (!shopDomain) {
+      console.error("❌ Hiányzik a 'x-shopify-shop-domain' header.");
+      return json({ error: "Missing shop domain" }, { status: 400 });
+    }
+
     const order = await request.json();
     console.log("📦 Webhook tartalma:", JSON.stringify(order, null, 2));
 
-    const shopDomain = order.store_domain;
     const orderId = order.id;
 
     const shop = await db.shop.findUnique({

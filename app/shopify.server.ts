@@ -7,7 +7,6 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { db } from "./db.server";
 
-// 💡 Shopify app URL biztosítása (/ nélkül a végén)
 const appUrl = process.env.SHOPIFY_APP_URL?.replace(/\/$/, "");
 
 if (!appUrl) {
@@ -28,10 +27,16 @@ const shopify = shopifyApp({
     removeRest: true,
   },
 
-  // ✅ Webhook regisztráció automatikusan telepítés után
   async afterAuth({ session }: { session: import("@shopify/shopify-app-remix/server").Session }) {
     const shop = session.shop;
     const accessToken = session.accessToken;
+
+    // ⬇️ SHOP mentése adatbázisba
+    await db.shop.upsert({
+      where: { shopDomain: shop },
+      update: { accessToken },
+      create: { shopDomain: shop!, accessToken: accessToken! },
+    });
 
     try {
       const response = await fetch(
@@ -45,7 +50,7 @@ const shopify = shopifyApp({
           body: JSON.stringify({
             webhook: {
               topic: "orders/create",
-              address: `${appUrl}/webhooks/orders/create`,
+              address: `${appUrl}/webhook/orders/create`,
               format: "json",
             },
           }),
@@ -53,12 +58,12 @@ const shopify = shopifyApp({
       );
 
       if (response.ok) {
-        console.log("Webhook sikeresen regisztrálva!");
+        console.log("✅ Webhook sikeresen regisztrálva!");
       } else {
-        console.error("Webhook regisztráció sikertelen:", await response.text());
+        console.error("❌ Webhook regisztráció sikertelen:", await response.text());
       }
     } catch (error) {
-      console.error("Webhook regisztráció error:", error);
+      console.error("❌ Webhook regisztráció error:", error);
     }
   },
 });
