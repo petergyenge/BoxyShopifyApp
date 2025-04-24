@@ -24,29 +24,27 @@ const shopify = shopifyApp({
   webhooks: {
     ORDERS_CREATE: {
       deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: "/webhooks/orders/create", // Ne felejtsd: legyen hozzá route is!
+      callbackUrl: "/webhooks/orders/create",
     },
   },
   hooks: {
     async afterAuth({ session }) {
-      console.log("⚡ afterAuth elindult!");
-
-      // 🧾 Mentsd az adatokat DB-be
+      console.log("🔥 afterAuth meghívva:", session.shop);
+  
       await db.shop.upsert({
         where: { shopDomain: session.shop },
         update: { accessToken: session.accessToken },
         create: {
           shopDomain: session.shop,
-          accessToken: session.accessToken ?? "default_access_token",
+          accessToken: session.accessToken ?? "default",
         },
       });
-
-      // 📡 Regisztráld a webhookokat
+  
       const result = await shopify.registerWebhooks({ session });
-
-      console.log("📬 Webhook regisztráció eredmény:", result);
+      console.log("✅ Webhook regisztrálva:", result);
     },
   },
+  
 });
 
 export default shopify;
