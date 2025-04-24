@@ -36,7 +36,7 @@ const shopify = shopifyApp({
       where: { shopDomain: shop },
       update: { accessToken },
       create: { shopDomain: shop!, accessToken: accessToken! },
-    });
+    });    
 
     try {
       const response = await fetch(

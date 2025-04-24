@@ -9,14 +9,13 @@ export const action = async ({ request }: { request: Request }) => {
     return json({ error: "Method not allowed" }, { status: 405 });
   }
 
+  const shopDomain = request.headers.get("x-shopify-shop-domain");
+  if (!shopDomain) {
+    console.error("❌ Hiányzik a 'x-shopify-shop-domain' fejléc!");
+    return json({ error: "Missing shop domain" }, { status: 400 });
+  }
+
   try {
-    const shopDomain = request.headers.get("x-shopify-shop-domain");
-
-    if (!shopDomain) {
-      console.error("❌ Hiányzik a 'x-shopify-shop-domain' header.");
-      return json({ error: "Missing shop domain" }, { status: 400 });
-    }
-
     const order = await request.json();
     console.log("📦 Webhook tartalma:", JSON.stringify(order, null, 2));
 
@@ -28,7 +27,7 @@ export const action = async ({ request }: { request: Request }) => {
 
     if (!shop) {
       console.error("❌ A bolt nem található az adatbázisban!");
-      return json({ error: "A bolt nem található az adatbázisban" }, { status: 404 });
+      return json({ error: "Shop not found in DB" }, { status: 404 });
     }
 
     const accessToken = shop.accessToken;
