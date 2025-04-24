@@ -3,23 +3,17 @@ import {
   ApiVersion,
   AppDistribution,
   shopifyApp,
+  DeliveryMethod,
 } from "@shopify/shopify-app-remix/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { db } from "./db.server";
-import axios from "axios";
-
-const appUrl = process.env.SHOPIFY_APP_URL?.replace(/\/$/, "");
-
-if (!appUrl) {
-  throw new Error("SHOPIFY_APP_URL is not defined in environment variables.");
-}
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,
   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
   apiVersion: ApiVersion.January25,
   scopes: process.env.SCOPES?.split(","),
-  appUrl,
+  appUrl: process.env.SHOPIFY_APP_URL!,
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(db),
   distribution: AppDistribution.AppStore,
@@ -27,56 +21,32 @@ const shopify = shopifyApp({
     unstable_newEmbeddedAuthStrategy: true,
     removeRest: true,
   },
+  webhooks: {
+    ORDERS_CREATE: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: "/webhooks/orders/create", // Ne felejtsd: legyen hozzá route is!
+    },
+  },
+  hooks: {
+    async afterAuth({ session }) {
+      console.log("⚡ afterAuth elindult!");
 
-  async afterAuth({ session }: { session: import("@shopify/shopify-app-remix/server").Session }) {
-    console.log("⚡ afterAuth elindult!");
-  
-    try {
-      const shop = session.shop;
-      const accessToken = session.accessToken;
-  
-      if (!accessToken) {
-        throw new Error("❌ accessToken hiányzik!");
-      }
-  
-      console.log("➡️ Shop mentés:", shop);
-  
+      // 🧾 Mentsd az adatokat DB-be
       await db.shop.upsert({
-        where: { shopDomain: shop },
-        update: { accessToken },
-        create: { shopDomain: shop, accessToken },
-      });
-  
-      const webhookUrl = `${appUrl}/webhook/orders/create`;
-      console.log("🔗 Webhook regisztrálás:", webhookUrl);
-  
-      const response = await axios.post(
-        `https://${shop}/admin/api/${ApiVersion}/webhooks.json`,
-        {
-          webhook: {
-            topic: "orders/create",
-            address: webhookUrl,
-            format: "json",
-          },
+        where: { shopDomain: session.shop },
+        update: { accessToken: session.accessToken },
+        create: {
+          shopDomain: session.shop,
+          accessToken: session.accessToken ?? "default_access_token",
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Shopify-Access-Token": accessToken,
-          },
-        }
-      );
-  
-      if (response.status === 201) {
-        console.log("✅ Webhook sikeresen regisztrálva!");
-      } else {
-        console.error("❌ Webhook hiba:", response.data);
-      }
-    } catch (error: any) {
-      console.error("🔥 Hiba az afterAuth alatt:", error.message || error);
-    }
-  }
-  ,
+      });
+
+      // 📡 Regisztráld a webhookokat
+      const result = await shopify.registerWebhooks({ session });
+
+      console.log("📬 Webhook regisztráció eredmény:", result);
+    },
+  },
 });
 
 export default shopify;

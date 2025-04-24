@@ -3,7 +3,7 @@ import { db } from "~/db.server";
 import axios from "axios";
 
 export const action = async ({ request }: { request: Request }) => {
-  console.log("📩 Webhook érkezett!");
+  console.log("Webhook érkezett!");
 
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
@@ -11,7 +11,7 @@ export const action = async ({ request }: { request: Request }) => {
 
   const shopDomain = request.headers.get("x-shopify-shop-domain");
   if (!shopDomain) {
-    console.error("❌ Hiányzik a 'x-shopify-shop-domain' fejléc!");
+    console.error("Hiányzik a 'x-shopify-shop-domain' fejléc!");
     return json({ error: "Missing shop domain" }, { status: 400 });
   }
 
@@ -26,7 +26,7 @@ export const action = async ({ request }: { request: Request }) => {
     });
 
     if (!shop) {
-      console.error("❌ A bolt nem található az adatbázisban!");
+      console.error("A bolt nem található az adatbázisban!");
       return json({ error: "Shop not found in DB" }, { status: 404 });
     }
 
@@ -66,7 +66,7 @@ export const action = async ({ request }: { request: Request }) => {
     const orderData = graphqlResponse.data.data.order;
 
     if (!orderData || !orderData.shippingAddress) {
-      console.error("❌ Nincs szállítási cím a rendelésben.");
+      console.error("Nincs szállítási cím a rendelésben.");
       return json({ error: "Nincs szállítási cím." }, { status: 400 });
     }
 
@@ -99,7 +99,7 @@ export const action = async ({ request }: { request: Request }) => {
     console.log("✅ Rendelés sikeresen frissítve:", updateResponse.data);
     return json({ success: true });
   } catch (error: any) {
-    console.error("❌ Hiba a webhook feldolgozása során:", error.message);
+    console.error("Hiba a webhook feldolgozása során:", error.message);
     return json({ error: "Hiba a rendelés feldolgozása közben." }, { status: 500 });
   }
 };
