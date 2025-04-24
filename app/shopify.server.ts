@@ -12,7 +12,7 @@ const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,
   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
   apiVersion: ApiVersion.January25,
-  scopes: process.env.SCOPES?.split(","),
+  scopes: process.env.SCOPES!.split(","),
   appUrl: process.env.SHOPIFY_APP_URL!,
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(db),
@@ -29,22 +29,31 @@ const shopify = shopifyApp({
   },
   hooks: {
     async afterAuth({ session }) {
+      if (!session) {
+        console.error("❌ afterAuth hívás során nem jött létre session.");
+        return;
+      }
+
       console.log("🔥 afterAuth meghívva:", session.shop);
-  
-      await db.shop.upsert({
-        where: { shopDomain: session.shop },
-        update: { accessToken: session.accessToken },
-        create: {
-          shopDomain: session.shop,
-          accessToken: session.accessToken ?? "default",
-        },
-      });
-  
+
+      try {
+        await db.shop.upsert({
+          where: { shopDomain: session.shop },
+          update: { accessToken: session.accessToken },
+          create: {
+            shopDomain: session.shop,
+            accessToken: session.accessToken ?? "default",
+          },
+        });
+        console.log("📦 Shop mentve az adatbázisba.");
+      } catch (err) {
+        console.error("💥 DB hiba afterAuth során:", err);
+      }
+
       const result = await shopify.registerWebhooks({ session });
-      console.log("✅ Webhook regisztrálva:", result);
+      console.log("✅ Webhook regisztráció eredmény:", result);
     },
   },
-  
 });
 
 export default shopify;
