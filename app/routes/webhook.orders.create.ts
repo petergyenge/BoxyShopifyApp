@@ -17,7 +17,7 @@ export const action = async ({ request }: { request: Request }) => {
 
   try {
     const order = await request.json();
-    console.log("📦 Webhook tartalma:", JSON.stringify(order, null, 2));
+    console.log("Webhook tartalma:", JSON.stringify(order, null, 2));
 
     const orderId = order.id;
 

@@ -23,27 +23,6 @@ const shopify = shopifyApp({
   ...(process.env.SHOP_CUSTOM_DOMAIN
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
-  hooks: {
-    async afterAuth({ session }) {
-      console.log("🔥 afterAuth meghívva:", session.shop);
-      console.log("🔐 Access Token:", session.accessToken);
-
-      try {
-        await db.shop.upsert({
-          where: { shopDomain: session.shop },
-          update: { accessToken: session.accessToken },
-          create: {
-            shopDomain: session.shop,
-            accessToken: session.accessToken ?? "default",
-          },
-        });
-        console.log("✅ Shop mentve az adatbázisba!");
-      } catch (err) {
-        console.error("💥 DB hiba:", err);
-      }
-    },
-  },
-
 });
 
 
