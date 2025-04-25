@@ -33,9 +33,10 @@ const shopify = shopifyApp({
         console.error("❌ afterAuth hívás során nem jött létre session.");
         return;
       }
-
-      console.log("🔥 afterAuth meghívva:", session.shop);
-
+      console.log("🔥 afterAuth meghívva:");
+      console.log("➡️ Shop:", session.shop);
+      console.log("🔐 Access Token:", session.accessToken);
+      console.log("🧾 Scope:", session.scope);
       try {
         await db.shop.upsert({
           where: { shopDomain: session.shop },
@@ -45,15 +46,15 @@ const shopify = shopifyApp({
             accessToken: session.accessToken ?? "default",
           },
         });
-        console.log("📦 Shop mentve az adatbázisba.");
+        console.log("📦 Shop sikeresen elmentve az adatbázisba!");
       } catch (err) {
-        console.error("💥 DB hiba afterAuth során:", err);
+        console.error("💥 DB mentési hiba afterAuth során:", err);
       }
-
+  
       const result = await shopify.registerWebhooks({ session });
       console.log("✅ Webhook regisztráció eredmény:", result);
     },
-  },
+  },  
 });
 
 export default shopify;

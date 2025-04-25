@@ -71,12 +71,12 @@ export const action = async ({ request }: { request: Request }) => {
     }
 
     const noteAttributes = [
-      { name: "Country code", value: orderData.shippingAddress.countryCodeV2 },
-      { name: "Név", value: orderData.shippingAddress.name },
-      { name: "Telefon", value: orderData.shippingAddress.phone || "" },
-      { name: "Cím", value: orderData.shippingAddress.address1 },
-      { name: "Város", value: orderData.shippingAddress.city },
-      { name: "Irányítószám", value: orderData.shippingAddress.zip },
+      { name: "CountryCode", value: orderData.shippingAddress.countryCodeV2 },
+      { name: "FullName", value: orderData.shippingAddress.name },
+      { name: "Phone", value: orderData.shippingAddress.phone || "" },
+      { name: "Addres", value: orderData.shippingAddress.address1 },
+      { name: "City", value: orderData.shippingAddress.city },
+      { name: "ZipCode", value: orderData.shippingAddress.zip },
       { name: "Email", value: orderData.customer?.email || "" },
     ];
 
@@ -96,7 +96,7 @@ export const action = async ({ request }: { request: Request }) => {
       }
     );
 
-    console.log("✅ Rendelés sikeresen frissítve:", updateResponse.data);
+    console.log("Rendelés sikeresen frissítve:", updateResponse.data);
     return json({ success: true });
   } catch (error: any) {
     console.error("Hiba a webhook feldolgozása során:", error.message);
