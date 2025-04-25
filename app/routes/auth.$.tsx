@@ -20,7 +20,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     });
     console.log("✅ Shop sikeresen mentve az adatbázisba!");
   } catch (err) {
-    console.error("💥 DB hiba:", err);
+    console.error("DB hiba:", err);
   }
 
   return null;
