@@ -3,7 +3,7 @@ import { db } from "~/db.server";
 import axios from "axios";
 
 export const action = async ({ request }: { request: Request }) => {
-  console.log("Webhook érkezett!");
+  console.log("Webhook received");
 
   if (request.method !== "POST") {
     return json({ error: "Method not allowed" }, { status: 405 });
@@ -11,13 +11,12 @@ export const action = async ({ request }: { request: Request }) => {
 
   const shopDomain = request.headers.get("x-shopify-shop-domain");
   if (!shopDomain) {
-    console.error("Hiányzik a 'x-shopify-shop-domain' fejléc!");
     return json({ error: "Missing shop domain" }, { status: 400 });
   }
 
   try {
     const order = await request.json();
-    console.log("Webhook tartalma:", JSON.stringify(order, null, 2));
+    console.log("Order Number:", JSON.stringify(order.name, null, 2));
 
     const orderId = order.id;
 
@@ -26,7 +25,6 @@ export const action = async ({ request }: { request: Request }) => {
     });
 
     if (!shop) {
-      console.error("A bolt nem található az adatbázisban!");
       return json({ error: "Shop not found in DB" }, { status: 404 });
     }
 
@@ -66,8 +64,7 @@ export const action = async ({ request }: { request: Request }) => {
     const orderData = graphqlResponse.data.data.order;
 
     if (!orderData || !orderData.shippingAddress) {
-      console.error("Nincs szállítási cím a rendelésben.");
-      return json({ error: "Nincs szállítási cím." }, { status: 400 });
+      return json({ error: "No shippingAddress" }, { status: 400 });
     }
 
     const noteAttributes = [
@@ -96,10 +93,10 @@ export const action = async ({ request }: { request: Request }) => {
       }
     );
 
-    console.log("Rendelés sikeresen frissítve:", updateResponse.data);
+    console.log("Order successfully updated", updateResponse.data.name);
     return json({ success: true });
   } catch (error: any) {
-    console.error("Hiba a webhook feldolgozása során:", error.message);
-    return json({ error: "Hiba a rendelés feldolgozása közben." }, { status: 500 });
+    console.error("Webhook processing error", error.message);
+    return json({ error: "Failed to process the order" }, { status: 500 });
   }
 };

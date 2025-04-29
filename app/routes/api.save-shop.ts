@@ -1,11 +1,7 @@
-// app/routes/api/save-shop.ts
-
 import { json } from "@remix-run/node";
-import { db } from "~/db.server"; // Prisma instance
+import { db } from "~/db.server";
 
-// A POST requesthez használt action
 export const action = async ({ request }: { request: Request }) => {
-  // Kivesszük a shop URL-t és az access token-t a kérés body-jából
   const { shopDomain, accessToken } = await request.json();
 
   if (!shopDomain || !accessToken) {
@@ -13,7 +9,6 @@ export const action = async ({ request }: { request: Request }) => {
   }
 
   try {
-    // Új shop mentése a Prisma modelbe
     const shop = await db.shop.create({
       data: {
         shopDomain,
