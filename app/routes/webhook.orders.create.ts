@@ -16,7 +16,7 @@ export const action = async ({ request }: { request: Request }) => {
 
   try {
     const order = await request.json();
-    console.log("Order Number:", JSON.stringify(order.name, null, 2));
+    console.log("Order Number:", JSON.stringify(order, null, 2));
 
     const orderId = order.id;
 
