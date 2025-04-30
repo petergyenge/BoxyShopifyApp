@@ -16,7 +16,7 @@ export const action = async ({ request }: { request: Request }) => {
 
   try {
     const order = await request.json();
-    console.log("Order Number:", JSON.stringify(order, null, 2));
+    console.log("Order Number:", JSON.stringify(order.name, null, 2));
 
     const orderId = order.id;
 
@@ -93,7 +93,7 @@ export const action = async ({ request }: { request: Request }) => {
       }
     );
 
-    console.log("Order successfully updated", updateResponse.data.name);
+    console.log("Order successfully updated", order.name);
     return json({ success: true });
   } catch (error: any) {
     console.error("Webhook processing error", error.message);
