@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "919674b93712bcbbf4978290ffdc6274"
-application_url = "https://obligation-means-collections-truly.trycloudflare.com"
+application_url = "https://seeking-adds-purchases-armstrong.trycloudflare.com"
 embedded = true
 name = "OrderBAPI"
 handle = "orderbapi"
@@ -27,9 +27,9 @@ scopes = "write_products, read_orders, read_customers, customer_read_orders, cus
 
 [auth]
 redirect_urls = [
-  "https://obligation-means-collections-truly.trycloudflare.com/auth/callback",
-  "https://obligation-means-collections-truly.trycloudflare.com/auth/shopify/callback",
-  "https://obligation-means-collections-truly.trycloudflare.com/api/auth/callback"
+  "https://seeking-adds-purchases-armstrong.trycloudflare.com/auth/callback",
+  "https://seeking-adds-purchases-armstrong.trycloudflare.com/auth/shopify/callback",
+  "https://seeking-adds-purchases-armstrong.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
