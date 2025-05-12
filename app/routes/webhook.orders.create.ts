@@ -47,8 +47,8 @@ export const action = async ({ request }: { request: Request }) => {
             zip
             countryCodeV2
           }
-          noteAttributes {
-            name
+          customAttributes {
+            key
             value
           }
         }
