@@ -72,7 +72,11 @@ export const action = async ({ request }: { request: Request }) => {
       return json({ error: "No shippingAddress" }, { status: 400 });
     }
 
-    const existingAttributes = orderData.noteAttributes || [];
+const existingAttributes = (orderData.customAttributes || []).map((attr: { key: any; value: any; }) => ({
+  name: attr.key,
+  value: attr.value,
+}));
+
 
     const boxyAttributes = [
       { name: "Boxy_CountryCode", value: orderData.shippingAddress.countryCodeV2 },
