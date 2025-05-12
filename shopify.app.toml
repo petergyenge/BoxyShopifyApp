@@ -2,9 +2,9 @@
 
 client_id = "919674b93712bcbbf4978290ffdc6274"
 application_url = "https://boxy-shopify-app.onrender.com"
-embedded = true
-name = "OrderBAPI"
-handle = "orderbapi"
+embedded = false
+name = "BoxyHelper"
+handle = "BoxyHelper"
 
 [build]
 include_config_on_deploy = true
