@@ -16,7 +16,7 @@ export const action = async ({ request }: { request: Request }) => {
 
   try {
     const order = await request.json();
-    console.log(shopDomain)
+    console.log(shopDomain);
     console.log("Order Number:", JSON.stringify(order.name, null, 2));
 
     const orderId = order.id;
@@ -47,6 +47,10 @@ export const action = async ({ request }: { request: Request }) => {
             zip
             countryCodeV2
           }
+          noteAttributes {
+            name
+            value
+          }
         }
       }
     `;
@@ -68,7 +72,9 @@ export const action = async ({ request }: { request: Request }) => {
       return json({ error: "No shippingAddress" }, { status: 400 });
     }
 
-    const noteAttributes = [
+    const existingAttributes = orderData.noteAttributes || [];
+
+    const boxyAttributes = [
       { name: "Boxy_CountryCode", value: orderData.shippingAddress.countryCodeV2 },
       { name: "Boxy_FullName", value: orderData.shippingAddress.name },
       { name: "Boxy_Phone", value: orderData.shippingAddress.phone || "" },
@@ -78,12 +84,23 @@ export const action = async ({ request }: { request: Request }) => {
       { name: "Boxy_Email", value: orderData.customer?.email || "" },
     ];
 
+    const updatedAttributes = [...existingAttributes];
+
+    for (const attr of boxyAttributes) {
+      const index = updatedAttributes.findIndex((a) => a.name === attr.name);
+      if (index >= 0) {
+        updatedAttributes[index].value = attr.value;
+      } else {
+        updatedAttributes.push(attr);
+      }
+    }
+
     const updateResponse = await axios.put(
       `https://${shopDomain}/admin/api/2025-04/orders/${orderId}.json`,
       {
         order: {
           id: orderId,
-          note_attributes: noteAttributes,
+          note_attributes: updatedAttributes,
         },
       },
       {
