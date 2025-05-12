@@ -69,13 +69,13 @@ export const action = async ({ request }: { request: Request }) => {
     }
 
     const noteAttributes = [
-      { name: "CountryCode", value: orderData.shippingAddress.countryCodeV2 },
-      { name: "FullName", value: orderData.shippingAddress.name },
-      { name: "Phone", value: orderData.shippingAddress.phone || "" },
-      { name: "Addres", value: orderData.shippingAddress.address1 },
-      { name: "City", value: orderData.shippingAddress.city },
-      { name: "ZipCode", value: orderData.shippingAddress.zip },
-      { name: "Email", value: orderData.customer?.email || "" },
+      { name: "Boxy_CountryCode", value: orderData.shippingAddress.countryCodeV2 },
+      { name: "Boxy_FullName", value: orderData.shippingAddress.name },
+      { name: "Boxy_Phone", value: orderData.shippingAddress.phone || "" },
+      { name: "Boxy_Addres", value: orderData.shippingAddress.address1 },
+      { name: "Boxy_City", value: orderData.shippingAddress.city },
+      { name: "Boxy_ZipCode", value: orderData.shippingAddress.zip },
+      { name: "Boxy_Email", value: orderData.customer?.email || "" },
     ];
 
     const updateResponse = await axios.put(
