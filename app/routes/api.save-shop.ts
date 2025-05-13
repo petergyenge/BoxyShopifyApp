@@ -1,6 +1,6 @@
 import { json } from "@remix-run/node";
 import { db } from "~/db.server";
-import { saveWebhooks } from "./api.save-webhooks";
+import { saveWebhooks } from "./api.services.save-webhooks";
 
 export const action = async ({ request }: { request: Request }) => {
   const { shopDomain, accessToken, update } = await request.json();
@@ -22,9 +22,7 @@ export const action = async ({ request }: { request: Request }) => {
             createdAt: new Date(),
           },
         });
-
         await saveWebhooks(shopDomain);
-        
         return json({ success: true, shop: updatedShop }, { status: 200 });
       } else {
         return json({ error: "Shop already exists, update is not true" }, { status: 400 });
