@@ -20,7 +20,7 @@ export async function saveWebhooks(shopDomain: string) {
     },
     {
       topic: "orders/updated",
-      address: "https://boxy-shopify-app.onrender.com/webhook/orders/update",
+      address: "https://boxy-shopify-app.onrender.com/webhook/orders/create",
     },
   ];
 
