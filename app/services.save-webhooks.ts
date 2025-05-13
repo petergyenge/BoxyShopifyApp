@@ -46,16 +46,16 @@ export async function saveWebhooks(shopDomain: string) {
           error?.errors?.address?.[0]?.includes("already been taken");
 
         if (alreadyExists) {
-          console.warn(`Webhook already exists for topic: ${topic}`);
+          console.warn(`Webhook already exists for topic: ${shopDomain} ${topic}`);
           continue;
         }
 
         throw new Error(`HTTP ${res.status}: ${JSON.stringify(error)}`);
       }
 
-      console.log(`Webhook successfully registered: ${topic}`);
+      console.log(`Webhook successfully registered: ${shopDomain} ${topic}`);
     } catch (error) {
-      console.error(`Failed to register webhook (${topic}):`, error);
+      console.error(`Failed to register webhook (${shopDomain} ${topic}):`, error);
     }
   }
 }
