@@ -2,7 +2,7 @@ import axios from "axios";
 import { db } from "~/db.server";
 
 export async function saveWebhooks(shopDomain: string) {
-  const cleanShopDomain = shopDomain.replace(/^https?:\/\//, "");
+  const cleanShopDomain = shopDomain.replace(/^https?:\/\//i, "").trim();
 
   const shop = await db.shop.findUnique({
     where: { shopDomain },
