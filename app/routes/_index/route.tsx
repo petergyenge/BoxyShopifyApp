@@ -7,7 +7,7 @@ export default function App() {
         <h1 className={styles.heading}>Boxy Portál</h1>
         <p className={styles.subtext}>Kattints az alábbi hivatkozásra, ha meg szeretnéd nyitni a Boxy Portált.</p>
         <a
-          href="https://b2bp-test.apps.boxygroup.hu/"
+          href="https://portal.boxygroup.hu/"
           className={styles.link}
           target="_blank"
         >
