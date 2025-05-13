@@ -1,6 +1,6 @@
 import { json } from "@remix-run/node";
 import { db } from "~/db.server";
-import { saveWebhooks } from "./api.services.save-webhooks";
+import { saveWebhooks } from "../services.save-webhooks";
 
 export const action = async ({ request }: { request: Request }) => {
   const { shopDomain, accessToken, update } = await request.json();
